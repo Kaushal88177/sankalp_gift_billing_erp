@@ -3,7 +3,7 @@
 Complete web-based GST billing solution for retail shops. Built from scratch using PHP + MySQL.
 
 ## 🎥 Demo Video - 60 Sec
-<video src="./Billing_erp.mp4" width="100%" controls></video>
+<video src="[./Billing_erp.mp4](https://github.com/Kaushal88177/sankalp_gift_billing_erp/blob/main/Billing_erp.mp4)" width="100%" controls></video>
 
 ## 📸 Screenshots
 | Dashboard | Create Bill | Stock Report |
