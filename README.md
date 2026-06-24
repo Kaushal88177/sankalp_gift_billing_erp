@@ -3,14 +3,8 @@
 Complete web-based GST billing solution for retail shops. Built from scratch using PHP + MySQL.
 
 ## 🎥 Demo Video - 60 Sec
-## 🎥 Demo Video - 60 Sec
 
 [![Click to Watch Demo](screenshots/dashboard.png)](./Billing_erp.mp4)
-
-## 📸 Screenshots
-| Dashboard | Create Bill | Stock Report |
-| --- | --- | --- |
-| ![](screenshots/dashboard.png) | ![](screenshots/bill-page.png) | ![](screenshots/report.png) |
 
 ## ✨ Key Features
 - GST Invoice: HSN/SAC, CGST/SGST, Thermal + A4 Print
