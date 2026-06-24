@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sankalp Gift Corner</title>
+    <meta charset="UTF-8">
+    <style>
+        *{box-sizing:border-box;font-family:Arial}
+        body{margin:0;background:#f5f5f5;padding:20px}
+     .container{max-width:1200px;margin:auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+        h1{color:#2c3e50;text-align:center;margin:0 0 20px}
+     .tabs{display:flex;border-bottom:2px solid #3498db;margin-bottom:20px;flex-wrap:wrap}
+     .tab{padding:10px 20px;cursor:pointer;background:#ecf0f1;margin:0 5px 5px 0;border-radius:5px 5px 0 0}
+     .tab.active{background:#3498db;color:#fff}
+     .tab-content{display:none}
+     .tab-content.active{display:block}
+     .row{display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap}
+     .col{flex:1;min-width:200px}
+        label{display:block;margin-bottom:5px;font-weight:bold;color:#34495e}
+        input,select{width:100%;padding:8px;border:1px solid #bdc3c7;border-radius:4px}
+        input[readonly]{background:#ecf0f1}
+        table{width:100%;border-collapse:collapse;margin:15px 0}
+        th,td{border:1px solid #ddd;padding:8px;text-align:left}
+        th{background:#3498db;color:#fff}
+     .btn{background:#27ae60;color:#fff;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;margin-right:10px}
+     .btn-danger{background:#e74c3c}
+     .btn-print{background:#8e44ad}
+     .total-box{background:#f8f9fa;padding:15px;border-radius:4px;text-align:right;font-size:18px}
+     .alert{color:#e74c3c;font-weight:bold;padding:10px;background:#fdecea;border-radius:4px}
+     .search-box{margin:20px 0;padding:15px;background:#eaf2f8;border-radius:4px}
+      pre{background:#2c3e50;color:#ecf0f1;padding:10px;border-radius:4px;overflow-x:auto;font-size:12px}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Sankalp Gift Corner - Stock & GST Billing</h1>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('purchase', this)">Purchase</div>
+        <div class="tab" onclick="showTab('sale', this)">Sale</div>
+        <div class="tab" onclick="showTab('payment', this)">Payment</div>
+        <div class="tab" onclick="showTab('receipt', this)">Receipt</div>
+        <div class="tab" onclick="showTab('print', this)">Print Invoice</div>
+        <div class="tab" onclick="showTab('upload', this)">Bulk Upload</div>
+    </div>
+
+    <!-- PURCHASE -->
+    <div id="purchase" class="tab-content active">
+        <h3>Purchase Entry</h3>
+        <div class="row">
+            <div class="col"><label>From Party</label><input type="text" id="fromParty"></div>
+            <div class="col"><label>Invoice No.</label><input type="text" id="invNo"></div>
+            <div class="col"><label>Invoice Date</label><input type="date" id="invDate"></div>
+            <div class="col"><label>To Party</label><input type="text" id="toParty" value="Sankalp Gift Corner" readonly></div>
+        </div>
+        <h4>Add Items</h4>
+        <div class="row">
+            <div class="col"><label>Item Name</label><input type="text" id="itemName" list="itemList"></div>
+            <div class="col"><label>HSN Code</label><input type="text" id="hsnCode"></div>
+            <div class="col"><label>Quantity</label><input type="number" id="qty" step="0.01"></div>
+            <div class="col"><label>Rate</label><input type="number" id="rate" step="0.01"></div>
+            <div class="col"><label>GST %</label><input type="number" id="gst" value="18" step="0.01"></div>
+            <div class="col"><label>&nbsp;</label><button class="btn" onclick="addItem()">Add Item</button></div>
+        </div>
+        <datalist id="itemList"></datalist>
+        <table id="itemTable">
+            <thead><tr><th>Item</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Taxable</th><th>GST%</th><th>CGST</th><th>SGST</th><th>Total</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+        </table>
+        <div class="total-box">
+            Sub Total: ₹<span id="subTotal">0.00</span> | CGST: ₹<span id="totalCgst">0.00</span> | SGST: ₹<span id="totalSgst">0.00</span> | <b>Grand Total: ₹<span id="grandTotal">0.00</span></b>
+        </div>
+        <br><button class="btn" onclick="savePurchase()">Save Purchase</button>
+    </div>
+
+    <!-- SALE -->
+    <div id="sale" class="tab-content">
+        <h3>Sale Entry</h3>
+        <div class="row">
+            <div class="col"><label>From Party</label><input type="text" value="Sankalp Gift Corner" readonly></div>
+            <div class="col"><label>Invoice No.</label><input type="text" id="saleInvNo"></div>
+            <div class="col"><label>Invoice Date</label><input type="date" id="saleDate"></div>
+            <div class="col"><label>To Party</label><input type="text" id="saleToParty"></div>
+        </div>
+        <h4>Add Items</h4>
+        <div class="row">
+            <div class="col"><label>Item Name</label><input type="text" id="saleItemName" list="itemList"></div>
+            <div class="col"><label>Stock</label><input type="text" id="saleStock" readonly></div>
+            <div class="col"><label>Quantity</label><input type="number" id="saleQty" step="0.01"></div>
+            <div class="col"><label>Rate</label><input type="number" id="saleRate" step="0.01"></div>
+            <div class="col"><label>GST %</label><input type="number" id="saleGst" readonly></div>
+            <div class="col"><label>&nbsp;</label><button class="btn" onclick="addSaleItem()">Add Item</button></div>
+        </div>
+        <div id="stockAlert"></div>
+        <table id="saleItemTable">
+            <thead><tr><th>Item</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Taxable</th><th>GST%</th><th>CGST</th><th>SGST</th><th>Total</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+        </table>
+        <div class="total-box">
+            Sub Total: ₹<span id="saleSubTotal">0.00</span> | CGST: ₹<span id="saleTotalCgst">0.00</span> | SGST: ₹<span id="saleTotalSgst">0.00</span> | <b>Grand Total: ₹<span id="saleGrandTotal">0.00</span></b>
+        </div>
+        <br><button class="btn" onclick="saveSale()">Save Sale</button>
+    </div>
+
+    <!-- PAYMENT -->
+    <div id="payment" class="tab-content">
+        <h3>Payment Entry</h3>
+        <div class="row">
+            <div class="col"><label>Payment Date</label><input type="date" id="payDate"></div>
+            <div class="col"><label>By</label><select id="payMode"><option>Cash</option><option>Bank</option><option>UPI</option></select></div>
+            <div class="col"><label>To Party</label><input type="text" id="payToParty"></div>
+            <div class="col"><label>Amount</label><input type="number" id="payAmount" step="0.01"></div>
+            <div class="col"><label>Ref Invoice No.</label><input type="text" id="payRefInv"></div>
+        </div>
+        <button class="btn" onclick="savePayment()">Save Payment</button>
+    </div>
+
+    <!-- RECEIPT -->
+    <div id="receipt" class="tab-content">
+        <h3>Receipt Entry</h3>
+        <div class="row">
+            <div class="col"><label>Receipt Date</label><input type="date" id="recDate"></div>
+            <div class="col"><label>By</label><select id="recMode"><option>Cash</option><option>Bank</option><option>UPI</option></select></div>
+            <div class="col"><label>From Party</label><input type="text" id="recFromParty"></div>
+            <div class="col"><label>Amount</label><input type="number" id="recAmount" step="0.01"></div>
+            <div class="col"><label>Ref Invoice No.</label><input type="text" id="recRefInv"></div>
+        </div>
+        <button class="btn" onclick="saveReceipt()">Save Receipt</button>
+    </div>
+
+    <!-- PRINT -->
+    <div id="print" class="tab-content">
+        <h3>Print Invoice</h3>
+        <div class="search-box">
+            <div class="row">
+                <div class="col"><label>Search Invoice No.</label><input type="text" id="searchInv" list="invList"></div>
+                <div class="col"><label>OR Party Name</label><input type="text" id="searchParty" list="partyList"></div>
+                <div class="col"><label>Type</label><select id="printType"><option>Purchase</option><option>Sale</option><option>Payment</option><option>Receipt</option></select></div>
+                <div class="col"><label>&nbsp;</label><button class="btn btn-print" onclick="printInvoice()">Print</button></div>
+            </div>
+            <datalist id="invList"></datalist>
+            <datalist id="partyList"></datalist>
+        </div>
+    </div>
+
+    <!-- UPLOAD TAB -->
+    <div id="upload" class="tab-content">
+        <h3>Bulk Upload CSV / XML</h3>
+        <div class="row">
+            <div class="col">
+                <label>Select Table</label>
+                <select id="uploadType">
+                    <option value="stock_master">Stock Master</option>
+                    <option value="bills">Bills Only</option>
+                </select>
+            </div>
+            <div class="col">
+                <label>CSV / XML File</label>
+                <input type="file" id="uploadFile" accept=".csv,.xml">
+            </div>
+            <div class="col">
+                <label>&nbsp;</label>
+                <button class="btn" onclick="uploadFile()">Upload & Import</button>
+            </div>
+        </div>
+        <div style="background:#fff3cd; padding:15px; border-radius:4px; margin-top:15px">
+            <h4>CSV Format:</h4>
+            <p><b>stock_master:</b> item_name,hsn_code,current_stock,min_stock_alert,purchase_rate,sale_rate,gst_percent</p>
+            <p><b>bills:</b> bill_type,invoice_no,invoice_date,from_party,to_party,grand_total</p>
+            <h4>XML Format for stock_master:</h4>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;items&gt;
+    &lt;item&gt;
+        &lt;item_name&gt;Ball Pen&lt;/item_name&gt;
+        &lt;hsn_code&gt;960810&lt;/hsn_code&gt;
+        &lt;current_stock&gt;100&lt;/current_stock&gt;
+        &lt;min_stock_alert&gt;20&lt;/min_stock_alert&gt;
+        &lt;purchase_rate&gt;8&lt;/purchase_rate&gt;
+        &lt;sale_rate&gt;10&lt;/sale_rate&gt;
+        &lt;gst_percent&gt;18&lt;/gst_percent&gt;
+    &lt;/item&gt;
+&lt;/items&gt;</pre>
+        </div>
+    </div>
+</div>
+
+<script>
+let items = [], saleItems = [], stockData = [];
+
+function showTab(id, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+    if(id === 'print') loadSearchData();
+}
+
+async function loadStock() {
+    let res = await fetch('api.php?action=get_stock');
+    stockData = await res.json();
+    document.getElementById('itemList').innerHTML = stockData.map(s => `<option value="${s.item_name}">`).join('');
+}
+
+document.getElementById('itemName').addEventListener('change', function() {
+    let item = stockData.find(s => s.item_name === this.value);
+    if(item) {
+        document.getElementById('hsnCode').value = item.hsn_code;
+        document.getElementById('rate').value = item.purchase_rate;
+        document.getElementById('gst').value = item.gst_percent;
+    }
+});
+
+document.getElementById('saleItemName').addEventListener('change', function() {
+    let item = stockData.find(s => s.item_name === this.value);
+    if(item) {
+        document.getElementById('saleStock').value = item.current_stock;
+        document.getElementById('saleRate').value = item.sale_rate;
+        document.getElementById('saleGst').value = item.gst_percent;
+        if(parseFloat(item.current_stock) < parseFloat(item.min_stock_alert)) {
+            document.getElementById('stockAlert').innerHTML = `<p class="alert">⚠️ Low Stock Alert: ${item.item_name} - Only ${item.current_stock} left!</p>`;
+        } else {
+            document.getElementById('stockAlert').innerHTML = '';
+        }
+    }
+});
+
+function addItem() {
+    let name = document.getElementById('itemName').value, hsn = document.getElementById('hsnCode').value;
+    let qty = parseFloat(document.getElementById('qty').value), rate = parseFloat(document.getElementById('rate').value);
+    let gst = parseFloat(document.getElementById('gst').value);
+    if(!name ||!qty ||!rate) return alert('Fill all item fields');
+    let taxable = qty * rate, cgst = taxable * gst / 200, sgst = cgst, total = taxable + cgst + sgst;
+    items.push({name, hsn, qty, rate, taxable, gst, cgst, sgst, total});
+    renderItems();
+    document.getElementById('itemName').value = ''; document.getElementById('qty').value = ''; document.getElementById('rate').value = '';
+}
+
+function renderItems() {
+    document.querySelector('#itemTable tbody').innerHTML = items.map((i,idx) => `
+        <tr><td>${i.name}</td><td>${i.hsn}</td><td>${i.qty}</td><td>${i.rate}</td>
+        <td>${i.taxable.toFixed(2)}</td><td>${i.gst}</td><td>${i.cgst.toFixed(2)}</td>
+        <td>${i.sgst.toFixed(2)}</td><td>${i.total.toFixed(2)}</td>
+        <td><button class="btn-danger" onclick="items.splice(${idx},1);renderItems()">X</button></td></tr>
+    `).join('');
+    calcTotal();
+}
+
+function calcTotal() {
+    let sub = items.reduce((s,i) => s + i.taxable, 0);
+    let cgst = items.reduce((s,i) => s + i.cgst, 0);
+    let sgst = items.reduce((s,i) => s + i.sgst, 0);
+    document.getElementById('subTotal').innerText = sub.toFixed(2);
+    document.getElementById('totalCgst').innerText = cgst.toFixed(2);
+    document.getElementById('totalSgst').innerText = sgst.toFixed(2);
+    document.getElementById('grandTotal').innerText = (sub+cgst+sgst).toFixed(2);
+}
+
+async function savePurchase() {
+    let invoice_no = document.getElementById('invNo').value.trim();
+    let invoice_date = document.getElementById('invDate').value;
+    let from_party = document.getElementById('fromParty').value.trim();
+    let to_party = document.getElementById('toParty').value;
+    if(!invoice_no ||!invoice_date ||!from_party || items.length == 0) return alert('Fill all fields');
+    let payload = {bill_type: 'Purchase', invoice_no, invoice_date, from_party, to_party, items: items};
+    try {
+        let res = await fetch('api.php?action=save_bill', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        let result = await res.json();
+        if(result.status === 'success') {
+            alert('Purchase Saved!');
+            document.getElementById('invNo').value = ''; document.getElementById('fromParty').value = '';
+            document.getElementById('invDate').value = new Date().toISOString().split('T')[0];
+            items = []; renderItems(); loadStock();
+        } else alert('Error: ' + result.message);
+    } catch(err) { alert('Server Error: ' + err.message); }
+}
+
+function addSaleItem() {
+    let name = document.getElementById('saleItemName').value;
+    let stock = parseFloat(document.getElementById('saleStock').value);
+    let qty = parseFloat(document.getElementById('saleQty').value);
+    let rate = parseFloat(document.getElementById('saleRate').value);
+    let gst = parseFloat(document.getElementById('saleGst').value);
+    if(qty > stock) return alert('Quantity exceeds stock!');
+    if(!name ||!qty ||!rate) return alert('Fill all item fields');
+    let item = stockData.find(s => s.item_name === name), hsn = item.hsn_code;
+    let taxable = qty * rate, cgst = taxable * gst / 200, sgst = cgst, total = taxable + cgst + sgst;
+    saleItems.push({name, hsn, qty, rate, taxable, gst, cgst, sgst, total});
+    renderSaleItems();
+}
+
+function renderSaleItems() {
+    document.querySelector('#saleItemTable tbody').innerHTML = saleItems.map((i,idx) => `
+        <tr><td>${i.name}</td><td>${i.hsn}</td><td>${i.qty}</td><td>${i.rate}</td>
+        <td>${i.taxable.toFixed(2)}</td><td>${i.gst}</td><td>${i.cgst.toFixed(2)}</td>
+        <td>${i.sgst.toFixed(2)}</td><td>${i.total.toFixed(2)}</td>
+        <td><button class="btn-danger" onclick="saleItems.splice(${idx},1);renderSaleItems()">X</button></td></tr>
+    `).join('');
+    let sub = saleItems.reduce((s,i) => s + i.taxable, 0);
+    let cgst = saleItems.reduce((s,i) => s + i.cgst, 0);
+    let sgst = saleItems.reduce((s,i) => s + i.sgst, 0);
+    document.getElementById('saleSubTotal').innerText = sub.toFixed(2);
+    document.getElementById('saleTotalCgst').innerText = cgst.toFixed(2);
+    document.getElementById('saleTotalSgst').innerText = sgst.toFixed(2);
+    document.getElementById('saleGrandTotal').innerText = (sub+cgst+sgst).toFixed(2);
+}
+
+async function saveSale() {
+    let payload = {
+        bill_type: 'Sale',
+        invoice_no: document.getElementById('saleInvNo').value.trim(),
+        invoice_date: document.getElementById('saleDate').value,
+        from_party: 'Sankalp Gift Corner',
+        to_party: document.getElementById('saleToParty').value.trim(),
+        items: saleItems
+    };
+    if(!payload.invoice_no ||!payload.invoice_date ||!payload.to_party || saleItems.length == 0) return alert('Fill all fields');
+    try {
+        let res = await fetch('api.php?action=save_bill', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        let result = await res.json();
+        if(result.status === 'success') {
+            alert('Sale Saved!');
+            document.getElementById('saleInvNo').value = ''; document.getElementById('saleToParty').value = '';
+            document.getElementById('saleDate').value = new Date().toISOString().split('T')[0];
+            saleItems = []; renderSaleItems(); loadStock();
+        } else alert('Error: ' + result.message);
+    } catch(err) { alert('Server Error: ' + err.message); }
+}
+
+async function savePayment() {
+    let data = {
+        payment_date: document.getElementById('payDate').value,
+        payment_mode: document.getElementById('payMode').value,
+        to_party: document.getElementById('payToParty').value,
+        amount: document.getElementById('payAmount').value,
+        ref_invoice_no: document.getElementById('payRefInv').value
+    };
+    let res = await fetch('api.php?action=save_payment', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    let result = await res.json();
+    alert(result.status === 'success'? 'Payment Saved!' : 'Error: ' + result.message);
+}
+
+async function saveReceipt() {
+    let data = {
+        receipt_date: document.getElementById('recDate').value,
+        receipt_mode: document.getElementById('recMode').value,
+        from_party: document.getElementById('recFromParty').value,
+        amount: document.getElementById('recAmount').value,
+        ref_invoice_no: document.getElementById('recRefInv').value
+    };
+    let res = await fetch('api.php?action=save_receipt', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    let result = await res.json();
+    alert(result.status === 'success'? 'Receipt Saved!' : 'Error: ' + result.message);
+}
+
+async function loadSearchData() {
+    let res = await fetch('api.php?action=get_invoices');
+    let data = await res.json();
+    document.getElementById('invList').innerHTML = data.invoices.map(i => `<option value="${i}">`).join('');
+    document.getElementById('partyList').innerHTML = data.parties.map(p => `<option value="${p}">`).join('');
+}
+
+function printInvoice() {
+    let inv = document.getElementById('searchInv').value;
+    let party = document.getElementById('searchParty').value;
+    let type = document.getElementById('printType').value;
+    window.open(`print.php?type=${type}&inv=${inv}&party=${party}`, '_blank');
+}
+
+async function uploadFile() {
+    let file = document.getElementById('uploadFile').files[0];
+    let type = document.getElementById('uploadType').value;
+    if(!file) return alert('Select file');
+    let formData = new FormData();
+    formData.append('file', file); formData.append('type', type);
+    try {
+        let res = await fetch('api.php?action=upload', {method:'POST', body:formData});
+        let result = await res.json();
+        alert(result.message);
+        loadStock();
+        document.getElementById('uploadFile').value = '';
+    } catch(err) {
+        alert('Upload Error: ' + err.message);
+    }
+}
+
+window.onload = function() {
+    let today = new Date().toISOString().split('T')[0];
+    document.getElementById('invDate').value = today;
+    document.getElementById('saleDate').value = today;
+    document.getElementById('payDate').value = today;
+    document.getElementById('recDate').value = today;
+    loadStock();
+}
+</script>
+</body>
+</html>
