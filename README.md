@@ -2,19 +2,21 @@
 
 Complete web-based GST billing solution for retail shops. Built from scratch using PHP + MySQL.
 
-## 🎥 Demo Video - 60 Sec
+## 🎥 Demo Video
 
 <video src="./Billing_erp.mp4" width="100%" controls></video>
 
+*Video not loading? [Click here to watch](./Billing_erp.mp4)*
+
 ## ✨ Key Features
 - GST Invoice: HSN/SAC, CGST/SGST, Thermal + A4 Print
-- Inventory: Auto stock update, Reorder level alert, Dead stock report
+- Inventory: Auto stock update, Reorder level alert
 - Accounts: Receipt, Payment, Outstanding tracking
 - Reports: Day book, Sales/Purchase register
 - User Roles: Admin & Cashier login with permissions
 
 ## 🛠️ Tech Stack
-`PHP 8.2` `MySQL` `HTML5` `CSS3` `Bootstrap 5` `JavaScript` `jQuery` `XAMPP`
+`PHP 8.2` `MySQL` `HTML5` `CSS3` `XAMPP`
 
 ## 📂 Database Schema
 5 Tables: bills, bill_items, payments, receipts, stock_master
