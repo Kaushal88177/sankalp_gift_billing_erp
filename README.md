@@ -2,7 +2,6 @@
 
 Complete web-based GST billing solution for retail shops. Built from scratch using PHP + MySQL.
 
-## 🎥 Demo Video
 
 ## 🎥 Demo Video - 60 Sec
 
