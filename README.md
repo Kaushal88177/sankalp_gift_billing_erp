@@ -4,9 +4,11 @@ Complete web-based GST billing solution for retail shops. Built from scratch usi
 
 ## 🎥 Demo Video
 
-<video src="./Billing_erp.mp4" width="100%" controls></video>
+## 🎥 Demo Video - 60 Sec
 
-*Video not loading? [Click here to watch](./Billing_erp.mp4)*
+[![Watch Demo](screenshots/dashboard.png)](./Billing_erp.mp4)
+
+> Click the image above to play video in new tab
 
 ## ✨ Key Features
 - GST Invoice: HSN/SAC, CGST/SGST, Thermal + A4 Print
